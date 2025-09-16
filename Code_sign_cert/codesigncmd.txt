@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe" sign /f "D:\project\pki\Code_sign_cert\Managex_India_Certificate.pfx" /p "Managex@2024" /t http://timestamp.comodoca.com /fd sha256 /v "D:\project\pki\output\PKI Mod Setup 2.3.exe"

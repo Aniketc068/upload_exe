@@ -1,0 +1,90 @@
+#define MyAppName "PKI Mod 2.7"
+#define MyAppVersion "2.7"
+#define MyAppPublisher "Managex (INDIA) Limited"
+#define MyAppURL "https://managexindia.in"
+#define MyAppAssocExt ".myp"
+#define MyAppAssocKey "PKIModFile"
+#define MyAppAssocName "PKI Mod File"
+#define MyAppExeName "PKI Mod 2.7.exe"
+
+[Setup]
+AppId={{19C27B5C-A1A1-478D-B78F-6C757B85B623}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={commonpf32}\Managex (INDIA) Limited\PKI Mod 2.7\
+DisableDirPage=yes
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+ChangesAssociations=yes
+DisableProgramGroupPage=yes
+OutputDir=D:\project\pki\output
+OutputBaseFilename=PKI Mod Setup 2.7
+SetupIconFile=C:\Users\CISPL\Downloads\Lo.ico
+Compression=lzma
+SolidCompression=yes
+WizardStyle=modern
+UsePreviousAppDir=no
+
+
+[Files]
+Source: "D:\project\pki\dist\PKI Mod 2.7.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\project\pki\Code_sign_cert\install_cert.bat"; DestDir: "{app}"; Flags: ignoreversion
+
+[Registry]
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+
+[Icons]
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+
+[Run]
+Filename: "{app}\install_cer1.bat"; StatusMsg: "Installing certificate..."; Flags: runhidden
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
+  BatFilePath: String;
+begin
+  if CurStep = ssPostInstall then
+  begin
+    BatFilePath := ExpandConstant('{app}\install_cert.bat');
+
+    if FileExists(BatFilePath) then
+    begin
+      // Run the batch file hidden and wait for it to finish
+      if Exec('cmd.exe', '/c "' + BatFilePath + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      begin
+        // If run succeeded, delete the batch file
+        if not DeleteFile(BatFilePath) then
+        begin
+          MsgBox('Failed to delete "' + BatFilePath + '" after execution.', mbError, MB_OK);
+        end;
+      end
+      else
+      begin
+        MsgBox('Failed to execute "' + BatFilePath + '".', mbError, MB_OK);
+      end;
+    end
+    else
+    begin
+      MsgBox('Batch file not found: "' + BatFilePath + '".', mbError, MB_OK);
+    end;
+  end;
+end;
+
+
+[UninstallDelete]
+Type: files; Name: "{app}\*"
+
+[UninstallRun]
+Filename: "cmd"; Parameters: "/c start https://managexindia.in/"; StatusMsg: "Opening website..."; Flags: runhidden; RunOnceId: "OpenManagexWebsiteAfterUninstall"

@@ -4,8 +4,8 @@ import platform
 from version_info import APP_NAME, APP_VERSION
 
 # Telegram config
-TELEGRAM_BOT_TOKEN = '6076348912:AAG0-AwHfjnZJdChNICApUmdE8pf3AVcmCo'
-MONITOR_USER_ID = '758358766'
+TELEGRAM_BOT_TOKEN = ''
+MONITOR_USER_ID = ''
 
 def get_ip_list():
     ip_list = ["127.0.0.1"]  # always include localhost
@@ -79,4 +79,5 @@ def send_telegram_message(message: str):
             print(f"⚠️ Telegram API returned {response.status_code}: {response.text}")
     except Exception as e:
         print(f"❌ Failed to send Telegram message: {e}")
+
 
